@@ -3,38 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BurBie 아카이브 관리자</title>
+    <title>BurBie AI 관리자</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
-        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: none; font-weight: bold; }
-        .btn-google { background: #4285F4; color: white; }
-        .btn-youtube { background: #FF0000; color: white; }
-        #log { margin-top: 20px; padding: 10px; background: #222; border-radius: 8px; font-size: 14px; text-align: left; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; text-align: center; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .btn-yt { background: #FF0000; color: white; }
+        #result { text-align: left; background: #000; padding: 10px; border-radius: 8px; font-size: 13px; min-height: 100px; overflow-y: auto; }
+        .video-item { border-bottom: 1px solid #333; padding: 10px 0; }
     </style>
 </head>
 <body>
-    <h2>🚀 103GB 정리 & 유튜브 하이라이트</h2>
-    
-    <button class="btn-google" onclick="authGoogle()">1. 구글 드라이브 연결 (권한 승인)</button>
-    <button class="btn-youtube" onclick="fetchYouTube()">2. 내 채널 영상 불러오기</button>
-    
-    <div id="log">상태: 대기 중...</div>
+    <div class="card">
+        <h2>🎥 유튜브 하이라이트 분석</h2>
+        <p>내 채널의 최신 영상을 스캔합니다.</p>
+        <button class="btn-yt" onclick="getYouTubeVideos()">내 영상 불러오기</button>
+    </div>
+
+    <div class="card">
+        <h3>🚀 실행 로그</h3>
+        <div id="result">대기 중...</div>
+    </div>
 
     <script>
-        // 다음 단계에서 발급받을 키를 여기에 넣을 겁니다.
-        const CLIENT_ID = '발급받을_클라이언트ID';
-        const API_KEY = '발급받을_유튜브API키';
+        const API_KEY = 'AIzaSyDaLSJUGp5mgOwDYG3ISaQszV8argDKh8o';
 
-        function logMessage(msg) {
-            document.getElementById('log').innerText += '\n> ' + msg;
+        async function getYouTubeVideos() {
+            const status = document.getElementById('result');
+            status.innerHTML = "영상 목록을 가져오는 중...";
+
+            try {
+                // 유튜브 API를 통해 최신 영상 5개를 가져오는 주소입니다.
+                const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&type=video&maxResults=5&order=date`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.items && data.items.length > 0) {
+                    status.innerHTML = "";
+                    data.items.forEach(item => {
+                        const title = item.snippet.title;
+                        const videoId = item.id.videoId;
+                        status.innerHTML += `
+                            <div class="video-item">
+                                <strong>제목:</strong> ${title}<br>
+                                <button onclick="analyzeVideo('${videoId}')" style="width:auto; padding:5px 10px; font-size:12px; margin-top:5px;">AI 하이라이트 분석</button>
+                            </div>`;
+                    });
+                } else {
+                    status.innerHTML = "영상을 찾을 수 없습니다. (채널 설정을 확인하세요)";
+                }
+            } catch (error) {
+                status.innerHTML = "에러 발생: " + error.message;
+            }
         }
 
-        function authGoogle() {
-            logMessage("구글 로그인 연동 준비 중... (API 키 필요)");
-        }
-
-        function fetchYouTube() {
-            logMessage("유튜브 영상 스캔 준비 중... (API 키 필요)");
+        function analyzeVideo(id) {
+            alert("해당 영상(" + id + ")의 AI 분석을 시작합니다. (다음 단계에서 연동 예정)");
         }
     </script>
 </body>
