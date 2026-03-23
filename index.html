@@ -3,32 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BurBie 아카이브</title>
+    <title>BurBie 통합 아카이브 (PC판)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <section class="section">
-            <h2>🎥 YouTube Live</h2>
-            <div id="youtube-player">라이브 방송 대기 중...</div>
-            <button class="btn-yt" onclick="loadYouTube()">영상 목록 갱신</button>
-        </section>
-
-        <section class="section">
-            <h2>🔥 Today's Best Shot</h2>
-            <div id="photo-display">
-                <p>구글 포토에서 '셀카'를 찾는 중...</p>
+            <div class="content-box">
+                <h2>🎥 YouTube Live & VOD</h2>
+                <div id="youtube-player" class="preview-box">라이브 방송 대기 중...</div>
+                <button class="btn-yt" onclick="loadYouTube()">영상 목록 갱신</button>
             </div>
+            <div class="log-box" id="log-yt">시스템 대기 중...</div>
         </section>
 
         <section class="section">
-            <h2>⚙️ Storage Manager</h2>
-            <button class="btn-google" onclick="startDriveCleanup()">103GB 사진 자동 정리 시작</button>
-            <div id="status-log">시스템 준비 완료</div>
+            <div class="content-box">
+                <h2>🔥 Today's Best Shot</h2>
+                <div id="photo-display" class="preview-box">
+                    <p>셀카 사진 표시 공간</p>
+                </div>
+                <button class="btn-photo" onclick="loadBestShot()">오늘의 눈바디 불러오기</button>
+            </div>
+            <div class="log-box" id="log-photo">구글 포토 연동 대기 중...</div>
+        </section>
+
+        <section class="section">
+            <div class="content-box">
+                <h2>⚙️ Storage Manager</h2>
+                <button class="btn-google" onclick="startDriveCleanup()">103GB 자동 정리 (서버 전송)</button>
+            </div>
+            <div class="log-box" id="log-drive">드라이브 정리 대기 중...</div>
         </section>
     </div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="app.js"></script>
 </body>
 </html>
