@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>도현님의 데이터 관리소 (Admin)</title>
+    <style>
+        body { background: #121212; color: #eee; font-family: sans-serif; padding: 30px; text-align: center; }
+        .box { border: 1px solid #444; padding: 20px; border-radius: 10px; background: #1a1a1a; max-width: 800px; margin: 0 auto; }
+        .btn { display: block; width: 100%; padding: 15px; margin: 10px 0; border-radius: 8px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; transition: 0.3s; }
+        #auth-btn { background: #03dac6; color: #000; }
+        #start-btn { background: #cf6679; color: #fff; }
+        #log-window { margin-top: 15px; background: #000; padding: 15px; border-radius: 8px; height: 500px; overflow-y: auto; text-align: left; font-family: monospace; font-size: 12px; border: 1px solid #333; line-height: 1.6; }
+        .log-success { color: #7ee787; } .log-info { color: #d2a8ff; } .log-warn { color: #ff7b72; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🛠️ 드라이브 자동 정리 관리자</h1>
+        <button id="auth-btn" class="btn" onclick="handleAuthClick(() => log('✅ 권한 연결 완료!', 'log-success'))">1. 구글 권한 연결</button>
+        <button id="start-btn" class="btn" onclick="startOrganizing()">2. 자동 정리 스위치 ON</button>
+        <div id="log-window">작업 대기 중...</div>
+    </div>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/drive_manager.js"></script>
+</body>
+</html>
