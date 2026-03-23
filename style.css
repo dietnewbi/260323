@@ -1,0 +1,9 @@
+/* 폰 화면에 최적화된 다크 모드 디자인 */
+body { background-color: #000; color: #fff; margin: 0; padding: 10px; font-family: sans-serif; }
+.container { display: flex; flex-direction: column; gap: 15px; }
+.section { background: #1a1a1a; padding: 15px; border-radius: 12px; border: 1px solid #333; }
+h2 { font-size: 18px; margin-top: 0; color: #00ffcc; }
+button { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-size: 16px; margin-bottom: 5px; }
+.btn-yt { background: #ff0000; color: white; }
+.btn-google { background: #4285f4; color: white; }
+#status-log { font-size: 12px; color: #888; margin-top: 10px; background: #000; padding: 10px; border-radius: 5px; }
