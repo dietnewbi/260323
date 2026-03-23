@@ -3,63 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BurBie AI 관리자</title>
+    <title>BurBie AI 마스터 관리자</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; text-align: center; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        button { width: 100%; padding: 15px; margin: 10px 0; font-size: 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 15px; text-align: center; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #333; }
+        button { width: 100%; padding: 15px; margin: 8px 0; font-size: 16px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-google { background: #4285F4; color: white; }
         .btn-yt { background: #FF0000; color: white; }
-        #result { text-align: left; background: #000; padding: 10px; border-radius: 8px; font-size: 13px; min-height: 100px; overflow-y: auto; }
-        .video-item { border-bottom: 1px solid #333; padding: 10px 0; }
+        #log { text-align: left; background: #000; padding: 15px; border-radius: 8px; font-size: 13px; min-height: 150px; white-space: pre-wrap; color: #0f0; }
+        .video-item { border-bottom: 1px dotted #444; padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>🎥 유튜브 하이라이트 분석</h2>
-        <p>내 채널의 최신 영상을 스캔합니다.</p>
-        <button class="btn-yt" onclick="getYouTubeVideos()">내 영상 불러오기</button>
+        <h2>🚀 BurBie AI 통합 관리</h2>
+        <button class="btn-google" onclick="handleAuthClick()">1단계: 구글 권한 연결</button>
+        <button class="btn-yt" id="scan-btn" onclick="listUpcomingVideos()" style="display:none;">2단계: 내 유튜브 스캔</button>
     </div>
 
     <div class="card">
-        <h3>🚀 실행 로그</h3>
-        <div id="result">대기 중...</div>
+        <h3>📊 실시간 처리 로그</h3>
+        <div id="log">시스템 대기 중...</div>
     </div>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
+        const CLIENT_ID = '600053731905-kerhcpp5akmq0vmoi398kl0mdfm8k39u.apps.googleusercontent.com';
         const API_KEY = 'AIzaSyDaLSJUGp5mgOwDYG3ISaQszV8argDKh8o';
+        
+        let tokenClient;
+        let accessToken = null;
 
-        async function getYouTubeVideos() {
-            const status = document.getElementById('result');
-            status.innerHTML = "영상 목록을 가져오는 중...";
-
-            try {
-                // 유튜브 API를 통해 최신 영상 5개를 가져오는 주소입니다.
-                const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&type=video&maxResults=5&order=date`;
-                
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.items && data.items.length > 0) {
-                    status.innerHTML = "";
-                    data.items.forEach(item => {
-                        const title = item.snippet.title;
-                        const videoId = item.id.videoId;
-                        status.innerHTML += `
-                            <div class="video-item">
-                                <strong>제목:</strong> ${title}<br>
-                                <button onclick="analyzeVideo('${videoId}')" style="width:auto; padding:5px 10px; font-size:12px; margin-top:5px;">AI 하이라이트 분석</button>
-                            </div>`;
-                    });
-                } else {
-                    status.innerHTML = "영상을 찾을 수 없습니다. (채널 설정을 확인하세요)";
-                }
-            } catch (error) {
-                status.innerHTML = "에러 발생: " + error.message;
-            }
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+            logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        function analyzeVideo(id) {
-            alert("해당 영상(" + id + ")의 AI 분석을 시작합니다. (다음 단계에서 연동 예정)");
+        // 구글 로그인 및 권한 요청 세팅
+        window.onload = function() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/youtube.readonly',
+                callback: (response) => {
+                    if (response.error !== undefined) throw (response);
+                    accessToken = response.access_token;
+                    log("✅ 구글 권한 연결 성공!");
+                    document.getElementById('scan-btn').style.display = 'block';
+                },
+            });
+        };
+
+        function handleAuthClick() {
+            tokenClient.requestAccessToken({prompt: 'consent'});
+        }
+
+        async function listUpcomingVideos() {
+            log("📺 유튜브 영상 목록을 가져오는 중...");
+            try {
+                const response = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&type=video&forMine=true&maxResults=5`, {
+                    headers: { 'Authorization': `Bearer ${accessToken}` }
+                });
+                const data = await response.json();
+                
+                if (data.items) {
+                    log(`🎉 ${data.items.length}개의 영상을 찾았습니다.`);
+                    data.items.forEach(v => {
+                        log(`📽️ 제목: ${v.snippet.title}`);
+                    });
+                } else {
+                    log("❌ 영상을 찾을 수 없습니다.");
+                }
+            } catch (err) {
+                log("❗ 에러 발생: " + err.message);
+            }
         }
     </script>
 </body>
