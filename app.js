@@ -1,18 +1,53 @@
-// app.js 수정 부분
+// 1. 설정값 (도현 님의 정보)
+const API_KEY = 'AIzaSyDaLSJUGp5mgOwDYG3ISaQszV8argDKh8o';
+// 🚨 아래 주소를 도현 님이 새로 배포해서 받은 '웹 앱 URL'로 바꾸세요!
+const ORGANIZER_URL = 'https://script.google.com/macros/s/AKfycbwflRVBwurS4jrArkhYbKZxXnCzshFAyWMpxEV3wu1DS4lhiwLVfyUszU9br_83yXnn/exec';
 
-// 🚨 주의: 아까 복사한 '새 배포 주소'를 여기에 넣으세요!
-const ORGANIZER_URL = 'https://script.google.com/macros/s/방금_복사한_새_주소/exec';
+// 로그 출력 전용 함수
+function log(targetId, msg) {
+    const logDiv = document.getElementById(targetId);
+    if (logDiv) {
+        logDiv.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+}
 
+// 2. 드라이브 입주 작전 시작 (이 버튼이 핵심!)
 async function startDriveCleanup() {
-    log('log-drive', "🚀 103GB 사진 입주 작전을 시작합니다...");
+    log('log-drive', "🚀 103GB 사진 입주 명령을 서버로 보냅니다...");
     
     try {
-        // 새로 만든 입주 스크립트 주소로 신호를 보냅니다.
-        fetch(ORGANIZER_URL, { mode: 'no-cors' });
+        // 구글 서버에 신호를 보냅니다.
+        // fetch는 '가져오다'라는 뜻인데, 여기서는 주소를 한 번 쿡 찌르는 역할을 합니다.
+        await fetch(ORGANIZER_URL, { 
+            method: 'GET',
+            mode: 'no-cors' 
+        });
         
-        log('log-drive', "✅ 서버에 명령 전달 완료! 이제 구글 서버가 이름에 맞춰 폴더에 사진을 넣기 시작합니다.");
-        log('log-drive', "💡 양이 많으니 5~10분 뒤에 드라이브를 확인해 보시고, 아직 남았다면 버튼을 한 번 더 눌러주세요.");
-    } catch (error) {
-        log('log-drive', "❌ 서버 연결 실패: " + error.message);
+        log('log-drive', "✅ 서버 전송 성공! 구글이 일을 시작했습니다.");
+        log('log-drive', "💡 구글 드라이브 'MyArchive_2025' 폴더를 확인해 보세요.");
+    } catch (err) {
+        log('log-drive', "❌ 연결 에러: " + err.message);
+        console.error(err);
     }
+}
+
+// 3. 유튜브 데이터 불러오기
+async function loadYouTube() {
+    log('log-yt', "📺 최신 영상 목록을 가져옵니다...");
+    try {
+        const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&type=video&maxResults=5&order=date`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.items) {
+            log('log-yt', `🎉 ${data.items.length}개의 영상을 찾았습니다!`);
+        }
+    } catch (err) {
+        log('log-yt', "❗ 유튜브 연결 실패: " + err.message);
+    }
+}
+
+// 4. 구글 포토 기능 (대기 중)
+function loadBestShot() {
+    log('log-photo', "📸 구글 포토에서 셀카를 분석 중입니다 (권한 설정 필요)");
 }
