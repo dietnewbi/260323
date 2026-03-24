@@ -1,41 +1,18 @@
-const API_KEY = 'AIzaSyDaLSJUGp5mgOwDYG3ISaQszV8argDKh8o';
-const DEPLOY_URL = 'https://script.google.com/macros/s/AKfycbwflRVBwurS4jrArkhYbKZxXnCzshFAyWMpxEV3wu1DS4lhiwLVfyUszU9br_83yXnn/exec';
+// app.js 수정 부분
 
-// 특정 구역(targetId)에만 로그를 찍어주는 전용 함수
-function log(targetId, msg) {
-    const logDiv = document.getElementById(targetId);
-    logDiv.innerText += `\n[${new Date().toLocaleTimeString()}] ${msg}`;
-    logDiv.scrollTop = logDiv.scrollHeight; // 항상 최신 스크롤 유지
-}
+// 🚨 주의: 아까 복사한 '새 배포 주소'를 여기에 넣으세요!
+const ORGANIZER_URL = 'https://script.google.com/macros/s/방금_복사한_새_주소/exec';
 
-// 1. 유튜브 기능
-async function loadYouTube() {
-    log('log-yt', "📺 유튜브 데이터를 당겨오는 중...");
+async function startDriveCleanup() {
+    log('log-drive', "🚀 103GB 사진 입주 작전을 시작합니다...");
+    
     try {
-        const url = `https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&part=snippet&type=video&maxResults=5&order=date`;
-        const response = await fetch(url);
-        const data = await response.json();
-        if (data.items) {
-            log('log-yt', `🎉 최신 영상 ${data.items.length}개 로드 완료!`);
-        }
-    } catch (err) {
-        log('log-yt', "❗ 에러 발생: " + err.message);
-    }
-}
-
-// 2. 포토 기능 (현재 뼈대만)
-function loadBestShot() {
-    log('log-photo', "📸 구글 포토 API 연결을 시도합니다...");
-    log('log-photo', "❗ 현재 권한이 없습니다. 다음 단계에서 API 연동 작업이 필요합니다.");
-}
-
-// 3. 드라이브 정리 기능
-function startDriveCleanup() {
-    log('log-drive', "🚀 서버에 '103GB 사진 정리' 명령을 전송합니다.");
-    try {
-        fetch(DEPLOY_URL, { mode: 'no-cors' });
-        log('log-drive', "✅ 서버 전송 완료! 백그라운드 작업이 시작되었습니다. (진행 상황은 드라이브 MyArchive_Sorted 폴더에서 확인 가능)");
-    } catch (err) {
-        log('log-drive', "❌ 명령 전송 실패: " + err.message);
+        // 새로 만든 입주 스크립트 주소로 신호를 보냅니다.
+        fetch(ORGANIZER_URL, { mode: 'no-cors' });
+        
+        log('log-drive', "✅ 서버에 명령 전달 완료! 이제 구글 서버가 이름에 맞춰 폴더에 사진을 넣기 시작합니다.");
+        log('log-drive', "💡 양이 많으니 5~10분 뒤에 드라이브를 확인해 보시고, 아직 남았다면 버튼을 한 번 더 눌러주세요.");
+    } catch (error) {
+        log('log-drive', "❌ 서버 연결 실패: " + error.message);
     }
 }
